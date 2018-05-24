@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
     <style>
@@ -10,35 +10,72 @@
     </style>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
     <script src="style.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <title>OpenLayers example</title>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="popper.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <style>
+    </style>
   </head>
   <body>
-    <h2>ESPAÑA</h2>
     <div id="map" class="map"></div>
-    <script type="text/javascript">
-    var key = 'pk.eyJ1IjoiYWJtLWNjaHMtY3NpYyIsImEiOiJjamN2bjg0ODEwa3VjMnlzNnczNzZiMGQ4In0.xzpPwkaNK0qN5Y9XRTp37Q';
+    <div style="display: none;">
+      <!-- Popup -->
+      <div id="popup" title="Exea"></div>
+    </div>
+    <script>
+      var layer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+      });
 
-    var map = new ol.Map({
-      layers: [
-        new ol.layer.VectorTile({
-          declutter: true,
-          source: new ol.source.VectorTile({
-            attributions: '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> ' +
-              '© <a href="https://www.openstreetmap.org/copyright">' +
-              'OpenStreetMap contributors</a>',
-            format: new ol.format.MVT(),
-            url: 'https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v7/' +
-                '{z}/{x}/{y}.vector.pbf?access_token=' + key
-          }),
-          style: createMapboxStreetsV6Style(ol.style.Style, ol.style.Fill, ol.style.Stroke, ol.style.Icon, ol.style.Text)
+      var map = new ol.Map({
+        layers: [layer],
+        target: 'map',
+        view: new ol.View({
+          center: [0, 0],
+          zoom: 2
         })
-      ],
-  target: 'map',
-      view: new ol.View({
-        center: [0, 0],
-        zoom: 2
-      })
+      });
+
+      var pos = ol.proj.fromLonLat([16.3725, 48.208889]);
+
+      //POPUP FUNCIONANDO CORRECTAMENTE CON popper.js:
+      // Popup showing the position the user clicked
+      var popup = new ol.Overlay({
+        element: document.getElementById('popup')
+      });
+      map.addOverlay(popup);
+
+      map.on('click', function(evt) {
+        var element = popup.getElement();
+        var coordinate = evt.coordinate;
+        var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
+            coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+      //  $(element).popover('destroy');
+        popup.setPosition(coordinate);
+        // the keys are quoted to prevent renaming in ADVANCED mode.
+        $(element).popover({
+          'placement': 'right',
+          'animation': false,
+          'html': true,
+          'content': '<p>Has pinchado en:</p><code>' + hdms + '</code>',
+          'boundary': 'viewport'
+        });
+        $(element).popover('show');
+      });
+
+      map.on('postrender', function(e) {
+        let popover = $('#popup').data('bs.popover');
+        if(!popover) return;
+        let popper = popover._popper;
+        if(!popper) return;
+      popper.scheduleUpdate();
     });
+
+
     </script>
   </body>
 </html>

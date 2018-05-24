@@ -22,8 +22,8 @@ function createMapboxStreetsV6Style(Style, Fill, Stroke, Icon, Text) {
       iconCache[iconName] = icon;
     }
     return icon;
-  } 
-  
+  }
+
   var styles = [];
   return function(feature, resolution) {
 	  console.log(resolution);
@@ -116,7 +116,7 @@ function createMapboxStreetsV6Style(Style, Fill, Stroke, Icon, Text) {
       styles[length++] = text;
 	}
 	//CIUDADES MAYORES DE 100.000 HAB
-	else if (layer == 'place_label' && type == 'city' &&
+/*	else if (layer == 'place_label' && type == 'city' &&
 	 resolution >= 4891.96981025128) {
       text.getText().setText(feature.get('name_en'));
       text.getText().setFont('14px "Constantia", "Cambria"');
@@ -157,8 +157,8 @@ function createMapboxStreetsV6Style(Style, Fill, Stroke, Icon, Text) {
       stroke.setWidth(1);
       styles[length++] = text;
     }
-	
-	
+
+	*/
 	//CIUDADES ENTRE 10.000 Y 100.000 HAB
 	else if (layer == 'place_label' && type == 'town' &&
 	 resolution >= 4891.96981025128) {
@@ -201,8 +201,8 @@ function createMapboxStreetsV6Style(Style, Fill, Stroke, Icon, Text) {
       stroke.setWidth(1);
       styles[length++] = text;
     }
-	
-	
+
+
 	else if (layer == 'waterway_label' && (type == 'river' ||
         type == 'stream')) {
       text.getText().setText(feature.get('name_en'));
